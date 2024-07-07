@@ -1,56 +1,39 @@
-// Function to get the user's current position
-function getPosition() {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(showPosition, showError);
-    } else {
-        document.getElementById("location").innerHTML = "Geolocation is not supported by this browser.";
-    }
-}
+const express = require('express');
+const http = require('http');
+const socketIo = require('socket.io');
 
-// Function to watch the user's position
-function watchPosition() {
-    if (navigator.geolocation) {
-        navigator.geolocation.watchPosition(showPosition, showError);
-    } else {
-        document.getElementById("location").innerHTML = "Geolocation is not supported by this browser.";
-    }
-}
+// Create an Express application
+const app = express();
 
-// Function to display the position
-function showPosition(position) {
-    const lat = position.coords.latitude;
-    const lon = position.coords.longitude;
-    document.getElementById("location").innerHTML = `Latitude: ${lat} <br> Longitude: ${lon}`;
-    
-    // Send position to the server
-    sendPositionToServer(lat, lon);
-}
+// Create a HTTP server
+const server = http.createServer(app);
 
-// Function to handle errors
-function showError(error) {
-    switch(error.code) {
-        case error.PERMISSION_DENIED:
-            document.getElementById("location").innerHTML = "User denied the request for Geolocation.";
-            break;
-        case error.POSITION_UNAVAILABLE:
-            document.getElementById("location").innerHTML = "Location information is unavailable.";
-            break;
-        case error.TIMEOUT:
-            document.getElementById("location").innerHTML = "The request to get user location timed out.";
-            break;
-        case error.UNKNOWN_ERROR:
-            document.getElementById("location").innerHTML = "An unknown error occurred.";
-            break;
-    }
-}
+// Create a Socket.IO server and attach it to the HTTP server
+const io = socketIo(server);
 
-// Function to send position to the server
-function sendPositionToServer(lat, lon) {
-    const xhr = new XMLHttpRequest();
-    xhr.open("POST", "your-server-endpoint", true);
-    xhr.setRequestHeader("Content-Type", "application/json");
-    xhr.send(JSON.stringify({ latitude: lat, longitude: lon }));
-}
+// Serve static files from the "public" directory
+app.use(express.static('public'));
 
-// Start watching the user's position
-watchPosition();
+// Listen for new connections from clients (socket)
+io.on('connection', (socket) => {
+    console.log('New client connected');
+
+    // Listen for position updates from the client
+    socket.on('positionUpdate', (position) => {
+        console.log('Received position:', position);
+
+        // Broadcast the position to all clients
+        io.emit('positionUpdate', position);
+    });
+
+    // Handle client disconnection
+    socket.on('disconnect', () => {
+        console.log('Client disconnected');
+    });
+});
+
+// Start the server
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});

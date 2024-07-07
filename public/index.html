@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Real-Time Location Tracking</title>
+</head>
+<body>
+    <h1>Real-Time Location Tracking</h1>
+    <div id="location">Getting location...</div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        socket.on('connect', () => {
+            console.log('Connected to server');
+        });
+
+        socket.on('positionUpdate', (position) => {
+            console.log('Received position:', position);
+            document.getElementById('location').innerHTML = `Latitude: ${position.latitude} <br> Longitude: ${position.longitude}`;
+        });
+
+        socket.on('disconnect', () => {
+            console.log('Disconnected from server');
+        });
+
+        // Function to get the user's current position
+        function getPosition() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition, showError);
+            } else {
+                document.getElementById("location").innerHTML = "Geolocation is not supported by this browser.";
+            }
+        }
+
+        // Function to watch the user's position
+        function watchPosition() {
+            if (navigator.geolocation) {
+                navigator.geolocation.watchPosition(showPosition, showError);
+            } else {
+                document.getElementById("location").innerHTML = "Geolocation is not supported by this browser.";
+            }
+        }
+
+        // Function to display the position
+        function showPosition(position) {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+            document.getElementById("location").innerHTML = `Latitude: ${lat} <br> Longitude: ${lon}`;
+            
+            // Send position to the server
+            socket.emit('positionUpdate', { latitude: lat, longitude: lon });
+        }
+
+        // Function to handle errors
+        function showError(error) {
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    document.getElementById("location").innerHTML = "User denied the request for Geolocation.";
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    document.getElementById("location").innerHTML = "Location information is unavailable.";
+                    break;
+                case error.TIMEOUT:
+                    document.getElementById("location").innerHTML = "The request to get user location timed out.";
+                    break;
+                case error.UNKNOWN_ERROR:
+                    document.getElementById("location").innerHTML = "An unknown error occurred.";
+                    break;
+            }
+        }
+
+        // Start watching the user's position
+        watchPosition();
+    </script>
+</body>
+</html>
