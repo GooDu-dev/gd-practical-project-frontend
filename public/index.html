@@ -27,7 +27,9 @@
         // Function to get the user's current position
         function getPosition() {
             if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(showPosition, showError);
+                navigator.geolocation.getCurrentPosition(showPosition, showError, {
+                    enableHighAccuracy: true
+                });
             } else {
                 document.getElementById("location").innerHTML = "Geolocation is not supported by this browser.";
             }
