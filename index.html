@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BLE Beacon Connection</title>
+</head>
+<body>
+    <button id="connect">Connect to BLE Beacon</button>
+
+    <script>
+        document.getElementById('connect').addEventListener('click', () => {
+        navigator.bluetooth.requestDevice({
+            filters: [{ name: 'Holy-IOT' }],
+            optionalServices: ['battery_service']
+        })
+        .then(device => {
+            return device.gatt.connect();
+        })
+        .then(server => {8
+            console.log('Connected to GATT server');
+            console.log(server)
+            // You can now interact with the device's GATT services
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+        });
+    </script>
+</body>
+</html>
