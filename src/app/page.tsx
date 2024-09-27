@@ -1,5 +1,4 @@
-import Image from "next/image";
-import { MouseEventHandler } from "react";
+'use client'
 const bluetooth = require('bluetooth')
 
 
