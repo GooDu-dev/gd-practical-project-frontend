@@ -3,8 +3,8 @@ function startTracking() {
         console.log("start trakcing")
         navigator.geolocation.watchPosition((position) => {
             const { latitude, longitude } = position.coords;
-            let lat = latitude.toFixed(5)
-            let long = longitude.toFixed(5)
+            let lat = latitude.toFixed(7)
+            let long = longitude.toFixed(7)
             console.log(`Latitude: ${lat}, Longitude: ${long}`);
             setLatLong(lat, long)
             // Here you can send the data to a server or display it on a map
@@ -23,8 +23,8 @@ function requestPermission(){
     if("geolocation" in navigator){
         navigator.geolocation.getCurrentPosition(position => {
             const { latitude, longitude } = position.coords;
-            let lat = latitude.toFixed(5)
-            let long = longitude.toFixed(5)
+            let lat = latitude.toFixed(7)
+            let long = longitude.toFixed(7)
             console.log(`Latitude: ${lat}, Longitude: ${long}`);
             setLatLong(lat, long)
         }, error => {
@@ -49,8 +49,8 @@ function setLatLong(lat, long){
     let lat_v = findAvgValue(lats)
     let long_v = findAvgValue(longs)
     last_index = (last_index + 1) % size 
-    LAT.innerText = lat_v.toFixed(5)
-    LONG.innerText = long_v.toFixed(5)
+    LAT.innerText = lat_v.toFixed(7)
+    LONG.innerText = long_v.toFixed(7)
 }
 
 function findAvgValue(arr){
