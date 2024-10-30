@@ -1,4 +1,4 @@
-const fix_number = 9
+const fix_number = 12
 
 function startTracking() {
     if ("geolocation" in navigator) {
@@ -66,7 +66,6 @@ function findAvgValue(arr){
         total += Number(a)
         count++
     }
-    console.log(total, count)
     return total / Math.min(count, size)
 }
 
