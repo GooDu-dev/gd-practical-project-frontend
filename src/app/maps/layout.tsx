@@ -3,14 +3,10 @@ import { Navbar } from '../component/navbar/navbar.component'
 
 const MapLayout = ({children}: {children: ReactNode}) => {
   return (
-    <html>
-        <body className='w-screen'>
-            <main className='w-full'>
-                {children}
-            </main>
-            <Navbar />
-        </body>
-    </html>
+    <div className='w-screen h-screen'>
+        {children}
+        <Navbar />
+    </div>
   )
 }
 
