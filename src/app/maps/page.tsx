@@ -117,7 +117,7 @@ export default function MapPage() {
 
   return (
     <Suspense>
-      <MapMarker draggable={false} lat={10.74} lng={0} setLat={() => {}} setLng={() => {}} />
+      <h1>Hello world</h1>
     </Suspense>
   )
 }
