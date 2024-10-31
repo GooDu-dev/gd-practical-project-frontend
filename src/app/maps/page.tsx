@@ -94,7 +94,7 @@ export default function MapPage() {
   useEffect(() => {
     let gis: GISData = {lat: location!.lat, lng: location!.lng}
     let crdn: Coordinate = trackingService.changeGISToCoordinate(gis)
-    
+    console.log('current_pos:', gis)
     if (position?.length != 3) {
       position?.push({
         gis: gis,
