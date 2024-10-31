@@ -1,10 +1,10 @@
-export interface Maps{
+export interface MapData{
     floor_id: number,
     floor_name: string,
     size_x: number,
     size_y: number,
-    rooms: Area[]
-    danger_zone: Area[]
+    rooms: Room[]
+    danger_zone: Room[]
 }
 export interface Area{
     id: number,
@@ -13,7 +13,10 @@ export interface Area{
     longitude: string,
     width: number,
     height: number,
-    area_type: string
+    area_type: string,
+    x: number,
+    y: number,
+    in_area_id: number
 }
 
 export interface Destination{
@@ -21,19 +24,19 @@ export interface Destination{
     name: string,
     latitude: string,
     longitude: string,
-    area: Room
-}
-interface Room{
-    id: number,
-    name: string,
-    latitude: string,
-    longitude: string,
-    width: number,
-    height: number,
-    floor: Floor,
-    area_type: string
+    area: Area & { floor: Floor }
 }
 interface Floor{
     id: number,
     name: string
+}
+
+export interface MapArray {
+    data: Uint8Array,
+    row: number,
+    column: number
+}
+
+export interface Room extends Area {
+    entrances: Area[]
 }
