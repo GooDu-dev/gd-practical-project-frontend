@@ -25,7 +25,9 @@ export function aStar(data: MapArray, start: [number, number], end: [number, num
 
     // Priority queue for open set
     const openSet = new MinHeap();
-    const gScores = Array.from({ length: rows }, () => Array(cols).fill(Infinity));
+    const gScores = Array.from({ length: rows + 1 }, () => Array(cols + 1).fill(Infinity));
+    console.log("start:", start)
+    console.log("gScores:", gScores)
     gScores[start[0]][start[1]] = 0;
 
     // Map to reconstruct the path
