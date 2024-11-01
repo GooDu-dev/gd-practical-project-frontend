@@ -8,27 +8,30 @@ class ServerCookie implements CookieInterface {
         this.expires = expires
     }
     getCookie(key: string): string {
-        let ck = cookies()
-        let value = ck.get(key)?.value
-        if(!value){
-            throw MyError.MissingCookieKeyOrData
-        }
-        return value
+        let value: string | undefined
+        cookies().then(ck => {
+            value = ck.get(key)?.value
+            if(!value){
+                throw MyError.MissingCookieKeyOrData
+            }
+        })
+        return value || ""
     }
     setCookie(key: string, data: any, expires: number = this.expires) {
-        let ck = cookies()
-        ck.set(key, data, {
-            maxAge: expires * 24 * 60 * 60 * 1000
+        cookies().then(ck => {
+            ck.set(key, data, {
+                maxAge: expires * 24 * 60 * 60 * 1000
+            })
         })
-        return
     }
     deleteCookie(key: string) {
-        let ck = cookies()
-        ck.set(key, "", {
-            maxAge: 0,
-            expires: new Date(0)
+        cookies().then(ck => {
+            ck.set(key, "", {
+                maxAge: 0,
+                expires: new Date(0)
+            })
+
         })
-        return
     } 
 }
 
