@@ -5,6 +5,7 @@ import { Coordinate, Position } from "@/services/tracking/tracking.interface";
 import TrackingService from "@/services/tracking/tracking.services";
 import common from "@/utils/common";
 import { ClientCookie } from "@/utils/cookies/cookies.client";
+import { Console } from "console";
 
 export function GetMapFromCookie(cookie: ClientCookie): [building: number, floor: number, room: number] {
     let building = +common.decode(cookie.getCookie('building'))
@@ -19,17 +20,21 @@ export function handleUserRoute(route: [number, number][], position: [Position, 
 
         let pos = averagePosition(position)
         let point = findNearestPoint(route, pos.crdn)
-        
+    
+        console.log('handleUserRoute:: \npos:', pos, 'point:', point)
+
         if (isOutOfRoute(point, pos.crdn)) {
             console.log('out from route')
-            service.setStart([pos.crdn.x, pos.crdn.y])
+            await service.setStart([Math.round(pos.crdn.x), Math.round(pos.crdn.y)])
+            console.log(service.getStart())
             route = await service.findRoute()
         }
+    
         resolve(route)
     })
 }
 
-function averagePosition(position: [Position, Position, Position]): Position {
+export function averagePosition(position: [Position, Position, Position]): Position {
     let total: Position = {
         gis: {
             lat: 0,
@@ -40,20 +45,25 @@ function averagePosition(position: [Position, Position, Position]): Position {
             y: 0
         }
     }
-    let size = position.length;
+    let size = 0;
 
     position.forEach(pos => {
-        total = {
-            gis: {
-                lat: total.gis.lat + pos.gis.lat,
-                lng: total.gis.lng + pos.gis.lng,
-            },
-            crdn: {
-                x: total.crdn.x + pos.crdn.x,
-                y: total.crdn.y + pos.crdn.y
+        if(pos){
+            total = {
+                gis: {
+                    lat: total.gis.lat + pos.gis.lat,
+                    lng: total.gis.lng + pos.gis.lng,
+                },
+                crdn: {
+                    x: total.crdn.x + pos.crdn.x,
+                    y: total.crdn.y + pos.crdn.y
+                }
             }
+            size++
         }
     })
+
+    console.log("total:", total, "size:", size)
 
     total = {
         gis: {

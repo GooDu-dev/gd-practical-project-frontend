@@ -41,17 +41,21 @@ class TrackingService {
         const [top_left, top_right, bottom_left, bottom_right] = this.bounds
         
         console.log("gis:", gis)
+        console.log("width:", width, "height:", height)
 
         let lat_diff = Math.abs(gis.lat - top_left.gis.lat)
         let lng_diff = Math.abs(gis.lng - top_left.gis.lng)
         let lat_full_diff = Math.abs(bottom_left.gis.lat - top_left.gis.lat)
         let lng_full_diff = Math.abs(top_right.gis.lng - top_left.gis.lng)
         
-        console.log("diff (lng, lat)", lng_diff, lat_diff)
-        console.log("full diff (lng, lat)", lng_full_diff, lat_full_diff)
+        // console.log("diff (lng, lat)", lng_diff, lat_diff)
+        // console.log("full diff (lng, lat)", lng_full_diff, lat_full_diff)
 
-        const x = (lng_diff / lng_full_diff) * width
-        const y = (lat_diff / lat_full_diff) * height
+        let x = (lng_diff / lng_full_diff) * width
+        let y = (lat_diff / lat_full_diff) * height
+
+        x = Math.min(x, width)
+        y = Math.min(y, height)
 
         return { x: x, y: y };
     }

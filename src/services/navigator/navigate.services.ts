@@ -32,7 +32,9 @@ class NavigatorService {
             let target: [number, number] = [this.target[1], this.target[0]]
             
             let path = aStar(this.map, start, target)
-            
+
+            console.log("path:", path)
+
             if(path.length == 0){
                 reject()
             }
@@ -42,6 +44,10 @@ class NavigatorService {
             resolve(this.route.queue)
 
         })
+    }
+
+    getStart(): [number, number] {
+        return this.start
     }
 
     setStart(start: [number, number]) {
