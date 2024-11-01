@@ -66,29 +66,29 @@ export default function MapPage() {
           }
         }
 
-
-
         let {x, y} = trackingService.changeGISToCoordinate(lct.KDAI)
         x = Math.round(x)
         y = Math.round(y)
 
         console.log("x:",x , "y:", y)
       })()
-  }, [])
-  
-  useEffect(() => {
-    if (typeof window === "undefined" && !("geolocation" in navigator)) {
-      return
-    }
 
-    navigator.geolocation.watchPosition( position => {
-      const { latitude, longitude } = position.coords
-      let data: GISData = {
-        lat: latitude,
-        lng: longitude
+      if (typeof window === "undefined" && !("geolocation" in navigator)) {
+        return
       }
-      setLocation(data)
-    })
+      console.log("window", window)
+      navigator.geolocation.watchPosition( position => {
+        const { latitude, longitude } = position.coords
+        let data: GISData = {
+          lat: latitude,
+          lng: longitude
+        }
+        setLocation(data)
+      }, (err) => {
+        console.log(err)
+      }, {
+        enableHighAccuracy: true
+      })
   }, [])
 
   useEffect(() => {
@@ -116,8 +116,6 @@ export default function MapPage() {
   }, [position])
 
   return (
-    <Suspense>
       <h1>Hello world</h1>
-    </Suspense>
   )
 }
