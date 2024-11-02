@@ -202,7 +202,8 @@ class MapServices {
                 this.setAreaType(top, left, left + width, top + height, area_type, m)
             }
             
-            await this.setPointType(31, 18, 0, m)
+            await this.setPointType(31, 17, 1, m)
+            await this.setPointType(32, 17, 1, m)
             this.printMap(m)
 
             resolve(m)
