@@ -9,6 +9,7 @@ class MapServices {
     private room_id: number;
     private maps!: MapData;
     private destination!: Destination;
+    private booths!: Area[];
 
     // map array
     private mapArray!: MapArray;
@@ -22,6 +23,7 @@ class MapServices {
     async initMapServices(){
         this.maps = await this.requestMapData()
         this.destination = await this.requestDestination()
+        this.booths = await this.requestBooth()
         this.mapArray = await this.initMapArray()
     }
 
@@ -62,7 +64,7 @@ class MapServices {
     private requestDestination() : Promise<Destination> {
         return new Promise<Destination>( async (resolve, reject) => {
             let data = {
-                room: this.room_id
+                booth: this.room_id
             }
         
             const response = await _axios.get('/search', data)
@@ -86,6 +88,29 @@ class MapServices {
                 }, 
             }
             resolve(dest)
+        })
+    }
+
+    private requestBooth(): Promise<Area[]> {
+        return new Promise<Area[]>(async (resolve, reject) => {
+            let data = {
+                building: this.building_id,
+                floor: this.floor_id
+            }
+            let uri = '/maps/booths'
+
+            let response = await _axios.get(uri, data)
+            if(response instanceof MyError){
+                reject(response)
+            }
+            
+            let areas: Area[] = []
+            for(let res of response){
+                let a: Area = this.createArea(res)
+                areas.push(a)
+            }
+
+            resolve(areas)
         })
     }
 
@@ -166,6 +191,18 @@ class MapServices {
 
             // hardcode
             await this.setAreaType(31, 12, 16, 31, 0, m)
+
+            for(let booth of this.booths) { 
+                let width = booth.width
+                let height = booth.height
+                let top = booth.y
+                let left = booth.x
+                let area_type = 5
+
+                this.setAreaType(top, left, left + width, top + height, area_type, m)
+            }
+
+            this.printMap(m)
 
             resolve(m)
         })

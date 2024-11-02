@@ -1,14 +1,27 @@
-import SearchForm from "../component/form/form.component";
-import React from "react";
+'use client'
 
-export default function SearchPage(){
+import common from '@/utils/common'
+import { ClientCookie } from '@/utils/cookies/cookies.client'
+import { useRouter } from 'next/navigation'
+import React, { useEffect } from 'react'
 
+const SearchPage = () => {
+  let router = useRouter()
+
+    useEffect(() => {
+        let cookie = new ClientCookie()
+        cookie.setCookie('building', common.encode('3'))
+        cookie.setCookie('floor', common.encode('1'))
+        cookie.setCookie('room', common.encode('96'))
+
+        router.push('/maps-v2')
+    })
+  
     return (
         <>
-            <div className="flex flex-col justify-center items-center h-1/2 my-auto">
-                <h1 className="text-center text-2xl sm:text-4xl md:text-4xl lg:text-5xl xl:text-7xl">Where do you wanna <span className="text-p_text font-bold">GO</span> ?</h1>
-                <SearchForm/>
-            </div>
+            <h1>This is a prototype, there are some error</h1>
         </>
     )
 }
+
+export default SearchPage
