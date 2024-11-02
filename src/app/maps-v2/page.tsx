@@ -5,7 +5,7 @@ import TrackingService from '@/services/tracking/tracking.services'
 import { ClientCookie } from '@/utils/cookies/cookies.client'
 import React, { useState, useEffect, useRef } from 'react'
 import { GetMapFromCookie } from '../maps/maps.page.services'
-import { MapData } from '@/services/maps/maps.interface'
+import { Destination, MapData } from '@/services/maps/maps.interface'
 import { Route } from '@/services/navigator/navigator.interface'
 import { describeRoute } from './map.v2.services'
 import { RouteDescription } from './map.v2.interface'
@@ -35,9 +35,12 @@ const MapV2Page = () => {
             let ts = new TrackingService(floor, md.size_x, md.size_y)
             await ts.initTrackingService()
 
+
+
             let ma = ms.getMapArray()
             let start: [number, number] = [21, 28]
-            let target: [number, number] = [8, 31]
+            let dest: Destination = ms.getDestination()
+            let target: [number, number] = [dest.area.x, dest.area.y]
             let ns = new NavigatorService(md, ma, start, target)
         
             setMapService(ms)

@@ -88,7 +88,7 @@ export default function SearchForm(){
         cookie.setCookie("room", data.room)
         cookie.setCookie("floor", data.floor)
 
-        router.push('/maps')
+        router.push('/maps-v2')
     }
 
     return (
