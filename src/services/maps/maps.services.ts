@@ -191,17 +191,18 @@ class MapServices {
 
             // hardcode
             await this.setAreaType(31, 12, 16, 31, 0, m)
-
+            
             for(let booth of this.booths) { 
                 let width = booth.width
                 let height = booth.height
                 let top = booth.y
                 let left = booth.x
                 let area_type = 5
-
+                
                 this.setAreaType(top, left, left + width, top + height, area_type, m)
             }
-
+            
+            await this.setPointType(31, 16, 0, m)
             this.printMap(m)
 
             resolve(m)
