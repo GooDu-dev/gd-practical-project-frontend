@@ -35,9 +35,6 @@ class NavigatorService {
 
             console.log("path:", path)
 
-            if(path.length == 0){
-                reject()
-            }
             
             this.route.queue.push(...path)
 

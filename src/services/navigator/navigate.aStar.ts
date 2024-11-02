@@ -14,13 +14,9 @@ export function aStar(data: MapArray, start: [number, number], end: [number, num
 
     const directions = [
         [0, -1], // left
-        [-1, -1], // left top
         [-1, 0], // top
-        [-1, 1], // right top
         [0, 1], // right
-        [1, 1], // right bottom
         [1, 0], // bottom
-        [1, -1], // left bottom
     ]
 
     // Priority queue for open set
@@ -60,7 +56,9 @@ export function aStar(data: MapArray, start: [number, number], end: [number, num
                 ny >= 0 && 
                 ny < cols && 
                 (data.data[MapServices.getIndex(nx, ny, data.column)] === 0 || 
-                data.data[MapServices.getIndex(nx, ny, data.column)] === 4)) {
+                data.data[MapServices.getIndex(nx, ny, data.column)] === 4 ||
+                data.data[MapServices.getIndex(nx, ny, data.column)] === 5
+            )) {
 
                 // console.log("=====> nx:", nx, "ny:", ny, "cols:", cols)
                 // console.log('=====> data:', data.data[MapServices.getIndex(nx, ny, data.column)])

@@ -18,23 +18,13 @@ export function GetMapFromCookie(cookie: ClientCookie): [building: number, floor
 export function handleUserRoute(route: [number, number][], position: [Position, Position, Position], service: NavigatorService): Promise<[number, number][]> {
     return new Promise<[number, number][]>(async (resolve, reject) => {
 
-        let pos = averagePosition(position)
-        let point = findNearestPoint(route, pos.crdn)
-    
-        console.log('handleUserRoute:: \npos:', pos, 'point:', point)
+        
 
-        if (isOutOfRoute(point, pos.crdn)) {
-            console.log('out from route')
-            await service.setStart([Math.round(pos.crdn.x), Math.round(pos.crdn.y)])
-            console.log(service.getStart())
-            route = await service.findRoute()
-        }
-    
         resolve(route)
     })
 }
 
-export function averagePosition(position: [Position, Position, Position]): Position {
+export function averagePosition(position: [Position, Position, Position], ratio: number = 0.2): Position {
     let total: Position = {
         gis: {
             lat: 0,
@@ -46,20 +36,22 @@ export function averagePosition(position: [Position, Position, Position]): Posit
         }
     }
     let size = 0;
+    let power = 1
 
     position.forEach(pos => {
         if(pos){
             total = {
                 gis: {
-                    lat: total.gis.lat + pos.gis.lat,
-                    lng: total.gis.lng + pos.gis.lng,
+                    lat: total.gis.lat + (pos.gis.lat * power),
+                    lng: total.gis.lng + (pos.gis.lng * power),
                 },
                 crdn: {
-                    x: total.crdn.x + pos.crdn.x,
-                    y: total.crdn.y + pos.crdn.y
+                    x: total.crdn.x + (pos.crdn.x * power),
+                    y: total.crdn.y + (pos.crdn.y * power)
                 }
             }
             size++
+            power -= ratio
         }
     })
 
@@ -79,7 +71,8 @@ export function averagePosition(position: [Position, Position, Position]): Posit
     return total
 }
 
-function isOutOfRoute(pos1: Coordinate, pos2: Coordinate, size: number = 5){
+export function isOutOfRoute(pos1: Coordinate, pos2: Coordinate, size: number = 5){
+    // check out from size
     if(pos2.x + size > pos1.x || pos2.x - size < pos1.x){
         return true
     }
@@ -89,11 +82,11 @@ function isOutOfRoute(pos1: Coordinate, pos2: Coordinate, size: number = 5){
     return false
 }
 
-function findNearestPoint(points: [number, number][], pos1: Coordinate, size: number = 5): Coordinate{
-    const heuristic = (pos1: Coordinate, pos2: Coordinate) => Math.abs(pos1.x - pos2.x) - Math.abs(pos1.y - pos2.y)
+export function findNearestPoint(points: [number, number][], pos1: Coordinate, size: number = 5): Coordinate{
+    const heuristic = (pos1: Coordinate, pos2: Coordinate) => Math.abs(pos1.x - pos2.x) + Math.abs(pos1.y - pos2.y)
 
     let min = 1000
-    let crdn: Coordinate;
+    let crdn: Coordinate = pos1;
     points.forEach(point => {
         let h = heuristic({x: point[1], y: point[0]}, pos1)
         if(min > h){
@@ -105,5 +98,20 @@ function findNearestPoint(points: [number, number][], pos1: Coordinate, size: nu
         }
     })
 
-    return crdn!
+    return crdn
+}
+
+export function addPosition(positions: Position[], new_pos: Position, index: number) {
+    if (positions?.length != 3) {
+        positions?.push({
+          gis: new_pos.gis,
+          crdn: new_pos.crdn
+        })
+      }
+      else {
+        positions[index] = {
+          gis: new_pos.gis,
+          crdn: new_pos.crdn
+        }
+      }
 }

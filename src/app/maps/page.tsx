@@ -6,9 +6,11 @@ import common from '@/utils/common'
 import { Destination, MapArray, MapData } from '@/services/maps/maps.interface'
 import MapMarker from '../component/map/map.room'
 import NavigatorService from '@/services/navigator/navigate.services'
-import { averagePosition, GetMapFromCookie, handleUserRoute } from './maps.page.services'
+import { averagePosition, GetMapFromCookie, findNearestPoint, isOutOfRoute, addPosition } from './maps.page.services'
 import TrackingService from '@/services/tracking/tracking.services'
 import { GISData, Position, Coordinate } from '@/services/tracking/tracking.interface'
+import Image from 'next/image'
+import SvgMap from '../component/map/map.image'
 
 export default function MapPage() {
 
@@ -21,7 +23,7 @@ export default function MapPage() {
   const [trackingService, setTrackingService] = useState<TrackingService | null>(null)
   const [navigatorService, setNavigatorService] = useState<NavigatorService | null>(null)
   const [positionIndex, setPositionIndex] = useState<number>(0)
-  const [crdnPosition, setCrdnPosition] = useState<Coordinate>({x: 0, y: 0})
+  const [crdnPosition, setCrdnPosition] = useState<Coordinate>({x: 21, y: 28})
 
   useEffect(() => {
       (async () => {
@@ -41,8 +43,8 @@ export default function MapPage() {
         let mapArray = await mapService.getMapArray()
         mapService.printMap(mapArray)
 
-        let start: [number, number] = [26, 21]
-        let target: [number, number] = [30, 5]
+        let start: [number, number] = [21, 28]
+        let target: [number, number] = [8, 31]
         let navigatorService = new NavigatorService(map, mapArray, start, target)
         setNavigatorService(navigatorService)
 
@@ -114,18 +116,7 @@ export default function MapPage() {
 
     console.log('current_pos:', gis, 'positionIndex:', positionIndex)
 
-    if (pos3?.length != 3) {
-      pos3?.push({
-        gis: gis,
-        crdn: crdn
-      })
-    }
-    else {
-      pos3[positionIndex] = {
-        gis: gis,
-        crdn: crdn
-      }
-    }
+    addPosition(position, { gis: gis, crdn: crdn }, positionIndex)
 
     let index = positionIndex
     index++
@@ -137,41 +128,47 @@ export default function MapPage() {
 
   }, [location])
   
-  useEffect(() => {
-    
+  useEffect( () => {
     console.log("position:", position)
- 
+    
     if(!position || !navigatorService){
       return
     }
-
+    
     if(!trackingService){
       return
     }
     
-    handleUserRoute(route, [position[0], position[1], position[2]], navigatorService)
-
     let pos = averagePosition([position[0], position[1], position[2]])
+    let point = findNearestPoint(route, pos.crdn)
+    
+    console.log('handleUserRoute:: \npos:', pos, 'point:', point);
+    
+    (async () => {
+      if (isOutOfRoute(point, pos.crdn)) {
+        console.log('out from route')
+        await navigatorService.setStart([Math.round(pos.crdn.x), Math.round(pos.crdn.y)])
+        console.log(navigatorService.getStart())
+        let r = await navigatorService.findRoute()
+        setRoute(r)
+      }
+      else {
+        setCrdnPosition(point)
+      }
+
+    })()
     
     console.log('useEffect:pos', pos)
     setCrdnPosition(pos.crdn)
   }, [positionIndex])
 
   return (
-    <>
-      <h1>GIS</h1>
-      {location && (
-        <div>
-          <h1>lat: {location.lat}</h1>
-          <h1>lng: {location.lng}</h1>
-        </div>
-      )}
-      {crdnPosition && (
-        <div>
-          <h1>x: {crdnPosition.x}</h1>
-          <h1>y: {crdnPosition.y}</h1>
-        </div>
-      )}
-    </>
+    <Suspense>
+      <SvgMap
+        width={1700}
+        height={1950}
+        position={crdnPosition}
+      />
+    </Suspense>
   )
 }
