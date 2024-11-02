@@ -69,7 +69,7 @@ export default function SearchBar({
                 </button>
                 {
                     dropdown_visible && (
-                        <ul className="absolute w-full border-2 border-black bg-white rounded-b-3xl top-full left-0 z-10">
+                        <ul className="absolute w-full border-2 border-black bg-white rounded-b-3xl top-full left-0 z-10 max-h-36 overflow-scroll">
                             {
                                 lists && lists.length > 0 && (
                                     lists
