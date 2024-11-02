@@ -1,3 +1,4 @@
+import { Position } from "@/services/tracking/tracking.interface";
 import { RouteDescription } from "./map.v2.interface";
 
 export function describeRoute(route: [number, number][]): RouteDescription[] {
